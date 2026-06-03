@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+authlib
+python-dotenv
+requests
+sqlalchemy
+psycopg2-binary
+pydantic-settings
+itsdangerous
