@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.middleware.sessions import SessionMiddleware
 from app.auth import oauth
@@ -9,6 +10,14 @@ import requests
 import base64
 
 app = FastAPI(title="CareerMail AI Backend")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.add_middleware(
     SessionMiddleware,
@@ -88,7 +97,6 @@ def get_gmail_emails(request: Request):
     )
 
     messages = list_response.json().get("messages", [])
-
     email_results = []
 
     for msg in messages:
@@ -104,8 +112,8 @@ def get_gmail_emails(request: Request):
         headers_list = email_data.get("payload", {}).get("headers", [])
 
         subject, sender, date = extract_headers(headers_list)
-
         snippet = email_data.get("snippet", "")
+
         category = classify_email(subject, sender, snippet)
         company = extract_company(sender)
 
@@ -168,7 +176,6 @@ def analytics(request: Request):
         snippet = email_data.get("snippet", "")
 
         category = classify_email(subject, sender, snippet)
-
         stats[category] = stats.get(category, 0) + 1
 
     return stats
@@ -243,3 +250,63 @@ def get_full_email(message_id: str, request: Request):
         "category": category,
         "body_preview": body[:3000]
     }
+
+
+@app.get("/companies")
+def companies(request: Request):
+    headers = get_auth_headers(request)
+
+    if not headers:
+        return {"error": "Not logged in. Please visit /login first."}
+
+    list_response = requests.get(
+        "https://gmail.googleapis.com/gmail/v1/users/me/messages",
+        headers=headers,
+        params={"maxResults": 50}
+    )
+
+    messages = list_response.json().get("messages", [])
+    company_stats = {}
+
+    for msg in messages:
+        msg_id = msg["id"]
+
+        detail_response = requests.get(
+            f"https://gmail.googleapis.com/gmail/v1/users/me/messages/{msg_id}",
+            headers=headers,
+            params={"format": "metadata"}
+        )
+
+        email_data = detail_response.json()
+        headers_list = email_data.get("payload", {}).get("headers", [])
+
+        subject, sender, date = extract_headers(headers_list)
+        snippet = email_data.get("snippet", "")
+
+        category = classify_email(subject, sender, snippet)
+
+        if category == "Not Job Related":
+            continue
+
+        company = extract_company(sender)
+
+        if company not in company_stats:
+            company_stats[company] = {
+                "total": 0,
+                "categories": {}
+            }
+
+        company_stats[company]["total"] += 1
+        company_stats[company]["categories"][category] = (
+            company_stats[company]["categories"].get(category, 0) + 1
+        )
+
+    sorted_companies = dict(
+        sorted(
+            company_stats.items(),
+            key=lambda item: item[1]["total"],
+            reverse=True
+        )
+    )
+
+    return sorted_companies
