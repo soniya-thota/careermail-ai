@@ -102,7 +102,7 @@ def get_gmail_emails(request: Request):
     list_response = requests.get(
         "https://gmail.googleapis.com/gmail/v1/users/me/messages",
         headers=headers,
-        params={"maxResults": 10}
+        params={"maxResults": 50}
     )
 
     messages = list_response.json().get("messages", [])
