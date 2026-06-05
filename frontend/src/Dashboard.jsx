@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 
 const API_BASE_URL = "https://careermail-ai-backend.onrender.com";
@@ -23,10 +24,16 @@ function Dashboard() {
 
       <div className="cards">
         {Object.entries(stats).map(([key, value]) => (
-          <div className="card" key={key}>
-            <h3>{key}</h3>
-            <h1>{value}</h1>
-          </div>
+          <Link
+            key={key}
+            to={`/category/${encodeURIComponent(key)}`}
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            <div className="card">
+              <h3>{key}</h3>
+              <h1>{value}</h1>
+            </div>
+          </Link>
         ))}
       </div>
     </div>
