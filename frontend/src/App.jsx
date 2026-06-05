@@ -5,6 +5,8 @@ import Emails from "./Emails";
 import EmailDetail from "./EmailDetail";
 import "./App.css";
 
+const API_BASE_URL = "https://careermail-ai-backend.onrender.com";
+
 function App() {
   return (
     <BrowserRouter>
@@ -17,6 +19,7 @@ function App() {
             <Link to="/">Dashboard</Link>
             <Link to="/companies">Companies</Link>
             <Link to="/emails">Emails</Link>
+            <a href={`${API_BASE_URL}/login`}>Login with Google</a>
           </nav>
         </header>
 
