@@ -6,6 +6,7 @@ from app.auth import oauth
 from app.config import settings
 from app.classifier import classify_email
 from app.company_extractor import extract_company
+from bs4 import BeautifulSoup
 import requests
 import base64
 
@@ -204,10 +205,29 @@ def extract_email_body(payload):
                 data = part.get("body", {}).get("data")
                 body_text += decode_base64url(data)
 
+            elif mime_type == "text/html":
+                data = part.get("body", {}).get("data")
+                body_text += decode_base64url(data)
+
             elif "parts" in part:
                 body_text += extract_email_body(part)
 
     return body_text
+
+
+def clean_html(raw_html):
+    if not raw_html:
+        return ""
+
+    soup = BeautifulSoup(raw_html, "html.parser")
+
+    for tag in soup(["style", "script", "head"]):
+        tag.decompose()
+
+    text = soup.get_text(separator=" ")
+    text = " ".join(text.split())
+
+    return text
 
 
 @app.get("/gmail/full-email/{message_id}")
@@ -238,7 +258,9 @@ def get_full_email(message_id: str, request: Request):
     subject, sender, date = extract_headers(headers_list)
 
     body = extract_email_body(payload)
-    category = classify_email(subject, sender, body)
+    clean_body = clean_html(body)
+
+    category = classify_email(subject, sender, clean_body)
     company = extract_company(sender)
 
     return {
@@ -248,7 +270,8 @@ def get_full_email(message_id: str, request: Request):
         "subject": subject,
         "date": date,
         "category": category,
-        "body_preview": body[:3000]
+        "snippet": email_data.get("snippet", ""),
+        "body_preview": clean_body[:3000]
     }
 
 

@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import Dashboard from "./Dashboard";
 import Companies from "./Companies";
 import Emails from "./Emails";
+import EmailDetail from "./EmailDetail";
 import "./App.css";
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/companies" element={<Companies />} />
             <Route path="/emails" element={<Emails />} />
+            <Route path="/emails/:id" element={<EmailDetail />} />
           </Routes>
         </main>
       </div>

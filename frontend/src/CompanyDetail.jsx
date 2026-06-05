@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 
-function Emails() {
+function CompanyDetail() {
+  const { companyName } = useParams();
   const [emails, setEmails] = useState([]);
 
   useEffect(() => {
@@ -10,18 +11,29 @@ function Emails() {
       .get("http://localhost:8000/gmail/emails", {
         withCredentials: true,
       })
-      .then((res) => setEmails(res.data.emails || []))
+      .then((res) => {
+        const allEmails = res.data.emails || [];
+
+        const filtered = allEmails.filter(
+          (email) =>
+            email.company?.toLowerCase() ===
+            decodeURIComponent(companyName).toLowerCase()
+        );
+
+        setEmails(filtered);
+      })
       .catch((err) => console.error(err));
-  }, []);
+  }, [companyName]);
 
   return (
     <div>
-      <h2>Recent Emails</h2>
+      <Link to="/companies">← Back to Companies</Link>
+
+      <h2>{decodeURIComponent(companyName)} Emails</h2>
 
       <table>
         <thead>
           <tr>
-            <th>Company</th>
             <th>Subject</th>
             <th>Category</th>
             <th>Date</th>
@@ -31,11 +43,8 @@ function Emails() {
         <tbody>
           {emails.map((email) => (
             <tr key={email.id}>
-              <td>{email.company}</td>
               <td>
-                <Link to={`/emails/${email.id}`}>
-                  {email.subject}
-                </Link>
+                <Link to={`/emails/${email.id}`}>{email.subject}</Link>
               </td>
               <td>{email.category}</td>
               <td>{email.date}</td>
@@ -47,4 +56,4 @@ function Emails() {
   );
 }
 
-export default Emails;
+export default CompanyDetail;
