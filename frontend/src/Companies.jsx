@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+const API_BASE_URL = "https://careermail-ai-backend.onrender.com";
+
 function Companies() {
   const [companies, setCompanies] = useState({});
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/companies", {
+      .get(`${API_BASE_URL}/companies`, {
         withCredentials: true,
       })
       .then((res) => setCompanies(res.data))

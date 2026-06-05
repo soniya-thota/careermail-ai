@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+const API_BASE_URL = "https://careermail-ai-backend.onrender.com";
+
 function Dashboard() {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/analytics", {
+      .get(`${API_BASE_URL}/analytics`, {
         withCredentials: true,
       })
       .then((res) => setStats(res.data))

@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
+const API_BASE_URL = "https://careermail-ai-backend.onrender.com";
+
 function Emails() {
   const [emails, setEmails] = useState([]);
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/gmail/emails", {
+      .get(`${API_BASE_URL}/gmail/emails`, {
         withCredentials: true,
       })
       .then((res) => setEmails(res.data.emails || []))
