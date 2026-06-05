@@ -156,3 +156,34 @@ tr:hover {
 .email-detail a:hover {
   color: #1d4ed8;
 }
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: #f4f6f8;
+}
+
+.login-page h1 {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+.login-page p {
+  font-size: 18px;
+  color: #4b5563;
+  margin-bottom: 30px;
+}
+
+.login-btn {
+  background: #2563eb;
+  color: white;
+  padding: 14px 28px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 18px;
+}

@@ -53,7 +53,7 @@ async def callback(request: Request):
     token = await oauth.google.authorize_access_token(request)
     request.session["access_token"] = token["access_token"]
 
-    return RedirectResponse(url=FRONTEND_URL)
+    return RedirectResponse(url="https://careermail-ai.vercel.app")
 
 
 @app.get("/logout")
@@ -341,3 +341,11 @@ def companies(request: Request):
     )
 
     return sorted_companies
+
+@app.get("/me")
+def me(request: Request):
+    access_token = request.session.get("access_token")
+
+    return {
+        "logged_in": access_token is not None
+    }
