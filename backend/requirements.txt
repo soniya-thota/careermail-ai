@@ -8,3 +8,4 @@ psycopg2-binary
 pydantic-settings
 itsdangerous
 beautifulsoup4
+httpx
