@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 from starlette.middleware.sessions import SessionMiddleware
+from starlette.responses import RedirectResponse
 from app.auth import oauth
 from app.config import settings
 from app.classifier import classify_email
@@ -12,10 +13,14 @@ import base64
 
 app = FastAPI(title="CareerMail AI Backend")
 
+FRONTEND_URL = "https://careermail-ai.vercel.app"
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173","https://careermail-ai.vercel.app",
-                   ],
+    allow_origins=[
+        "http://localhost:5173",
+        FRONTEND_URL,
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -46,15 +51,15 @@ async def login(request: Request):
 @app.get("/auth/callback")
 async def callback(request: Request):
     token = await oauth.google.authorize_access_token(request)
-    user = token.get("userinfo")
-
     request.session["access_token"] = token["access_token"]
 
-    return {
-        "message": "Login successful",
-        "user": user,
-        "has_access_token": True,
-    }
+    return RedirectResponse(url=FRONTEND_URL)
+
+
+@app.get("/logout")
+def logout(request: Request):
+    request.session.clear()
+    return RedirectResponse(url=FRONTEND_URL)
 
 
 def get_auth_headers(request: Request):
