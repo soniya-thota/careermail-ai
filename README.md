@@ -7,10 +7,11 @@ The platform integrates with Gmail using Google OAuth 2.0, automatically classif
 ---
 
 ## Live Demo
+**Backend:** https://careermail-ai-backend.onrender.com
 
 **Frontend:** https://careermail-ai.vercel.app
 
-**Backend:** https://careermail-ai-backend.onrender.com
+
 
 ---
 
