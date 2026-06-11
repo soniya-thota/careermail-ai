@@ -7,7 +7,6 @@ import Companies from "./Companies";
 import Emails from "./Emails";
 import EmailDetail from "./EmailDetail";
 import CompanyDetail from "./CompanyDetail";
-import CategoryDetail from "./CategoryDetail";
 import "./App.css";
 
 function App() {
@@ -90,7 +89,6 @@ function App() {
             <Route path="/applications" element={<Applications />} />
             <Route path="/companies" element={<Companies />} />
             <Route path="/companies/:companyName" element={<CompanyDetail />} />
-            <Route path="/category/:category" element={<CategoryDetail />} />
             <Route path="/emails" element={<Emails />} />
             <Route path="/emails/:id" element={<EmailDetail />} />
           </Routes>
