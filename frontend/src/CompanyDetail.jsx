@@ -1,18 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
-
-const API_BASE_URL = "https://careermail-ai-backend.onrender.com";
+import { api } from "./api";
 
 function CompanyDetail() {
   const { companyName } = useParams();
   const [emails, setEmails] = useState([]);
 
   useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/gmail/emails`, {
-        withCredentials: true,
-      })
+    api
+      .get("/gmail/emails")
       .then((res) => {
         const allEmails = res.data.emails || [];
 
@@ -33,27 +29,31 @@ function CompanyDetail() {
 
       <h2>{decodeURIComponent(companyName)} Emails</h2>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Subject</th>
-            <th>Category</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {emails.map((email) => (
-            <tr key={email.id}>
-              <td>
-                <Link to={`/emails/${email.id}`}>{email.subject}</Link>
-              </td>
-              <td>{email.category}</td>
-              <td>{email.date}</td>
+      {emails.length === 0 ? (
+        <p>No emails found for this company.</p>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>Subject</th>
+              <th>Category</th>
+              <th>Date</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+
+          <tbody>
+            {emails.map((email) => (
+              <tr key={email.id}>
+                <td>
+                  <Link to={`/emails/${email.id}`}>{email.subject}</Link>
+                </td>
+                <td>{email.category}</td>
+                <td>{email.date}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }

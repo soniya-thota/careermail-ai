@@ -1,18 +1,14 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
-
-const API_BASE_URL = "https://careermail-ai-backend.onrender.com";
+import { api } from "./api";
 
 function EmailDetail() {
   const { id } = useParams();
   const [email, setEmail] = useState(null);
 
   useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/gmail/full-email/${id}`, {
-        withCredentials: true,
-      })
+    api
+      .get(`/gmail/full-email/${id}`)
       .then((res) => setEmail(res.data))
       .catch((err) => console.error(err));
   }, [id]);
@@ -32,6 +28,9 @@ function EmailDetail() {
         <p><strong>From:</strong> {email.from}</p>
         <p><strong>Date:</strong> {email.date}</p>
         <p><strong>Category:</strong> {email.category}</p>
+        <p><strong>Status:</strong> {email.status}</p>
+        <p><strong>Next Action:</strong> {email.next_action}</p>
+        <p><strong>Summary:</strong> {email.summary}</p>
 
         <hr />
 

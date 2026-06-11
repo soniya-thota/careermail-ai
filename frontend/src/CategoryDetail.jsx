@@ -1,25 +1,20 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
-
-const API_BASE_URL = "https://careermail-ai-backend.onrender.com";
+import { api } from "./api";
 
 function CategoryDetail() {
   const { category } = useParams();
   const [emails, setEmails] = useState([]);
 
   useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/gmail/emails`, {
-        withCredentials: true,
-      })
+    api
+      .get("/gmail/emails")
       .then((res) => {
         const allEmails = res.data.emails || [];
+        const decodedCategory = decodeURIComponent(category).toLowerCase();
 
         const filtered = allEmails.filter(
-          (email) =>
-            email.category?.toLowerCase() ===
-            decodeURIComponent(category).toLowerCase()
+          (email) => email.category?.toLowerCase() === decodedCategory
         );
 
         setEmails(filtered);

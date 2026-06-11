@@ -1,17 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
-
-const API_BASE_URL = "https://careermail-ai-backend.onrender.com";
+import { api } from "./api";
 
 function Dashboard() {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/analytics`, {
-        withCredentials: true,
-      })
+    api
+      .get("/job-insights")
       .then((res) => setStats(res.data))
       .catch((err) => console.error(err));
   }, []);
@@ -20,7 +16,7 @@ function Dashboard() {
 
   return (
     <div>
-      <h2>Analytics Dashboard</h2>
+      <h2>Job Search Intelligence Dashboard</h2>
 
       <div className="cards">
         {Object.entries(stats).map(([key, value]) => (

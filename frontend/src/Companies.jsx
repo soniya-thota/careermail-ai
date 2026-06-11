@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-
-const API_BASE_URL = "https://careermail-ai-backend.onrender.com";
+import { Link } from "react-router-dom";
+import { api } from "./api";
 
 function Companies() {
   const [companies, setCompanies] = useState({});
 
   useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/companies`, {
-        withCredentials: true,
-      })
+    api
+      .get("/companies")
       .then((res) => setCompanies(res.data))
       .catch((err) => console.error(err));
   }, []);
@@ -30,7 +27,11 @@ function Companies() {
         <tbody>
           {Object.entries(companies).map(([name, data]) => (
             <tr key={name}>
-              <td>{name}</td>
+              <td>
+                <Link to={`/companies/${encodeURIComponent(name)}`}>
+                  {name}
+                </Link>
+              </td>
               <td>{data.total}</td>
             </tr>
           ))}
