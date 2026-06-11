@@ -5,6 +5,19 @@ import { api } from "./api";
 function Dashboard() {
   const [stats, setStats] = useState(null);
 
+  const categoryRoutes = {
+    Interviews: "Interview",
+    Offers: "Offer",
+    Rejections: "Rejection",
+    "Recruiter Responses": "Recruiter Message",
+  };
+
+  const applicationRoutes = [
+    "Applications Tracked",
+    "Active Applications",
+    "Follow-Ups Needed",
+  ];
+
   useEffect(() => {
     api
       .get("/job-insights")
@@ -19,18 +32,36 @@ function Dashboard() {
       <h2>Job Search Intelligence Dashboard</h2>
 
       <div className="cards">
-        {Object.entries(stats).map(([key, value]) => (
-          <Link
-            key={key}
-            to={`/category/${encodeURIComponent(key)}`}
-            style={{ textDecoration: "none", color: "inherit" }}
-          >
+        {Object.entries(stats).map(([key, value]) => {
+          let linkTo = null;
+
+          if (categoryRoutes[key]) {
+            linkTo = `/category/${encodeURIComponent(categoryRoutes[key])}`;
+          }
+
+          if (applicationRoutes.includes(key)) {
+            linkTo = "/applications";
+          }
+
+          const card = (
             <div className="card">
               <h3>{key}</h3>
               <h1>{value}</h1>
             </div>
-          </Link>
-        ))}
+          );
+
+          return linkTo ? (
+            <Link
+              key={key}
+              to={linkTo}
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              {card}
+            </Link>
+          ) : (
+            <div key={key}>{card}</div>
+          );
+        })}
       </div>
     </div>
   );
