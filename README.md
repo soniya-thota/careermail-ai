@@ -1,331 +1,272 @@
-# CareerMail AI
+# CareerMail AI — AI Job Search Operating System
 
-CareerMail AI is a full-stack AI-powered job application email management platform that helps job seekers organize, analyze, and track recruiting communications directly from Gmail.
+CareerMail AI is a multi-user, privacy-first AI job search intelligence platform. It connects to Gmail, filters job-search emails, classifies recruiting communication, tracks application status, analyzes resume-job fit, and generates next actions for job seekers.
 
-The platform integrates with Gmail using Google OAuth 2.0, automatically classifies recruiting emails, provides analytics dashboards, and helps users monitor their job search progress through a centralized interface.
-
----
+This project is designed as a portfolio-ready AI/ML + Software Engineering + Data Engineering project.
 
 ## Live Demo
-**Backend:** https://careermail-ai-backend.onrender.com
 
-**Frontend:** https://careermail-ai.vercel.app
+- Frontend: https://careermail-ai.vercel.app
+- Backend: https://careermail-ai-backend.onrender.com
+- Local frontend: http://localhost:5173
+- Local backend docs: http://127.0.0.1:8000/docs
+
+## Product Problem
+
+Job seekers lose track of applications because important emails are mixed with newsletters, job alerts, rejections, recruiter replies, interviews, and offers.
+
+CareerMail AI solves this by turning messy Gmail data into structured job-search intelligence.
+
+## Final Features
+
+### Dual Entry Mode
+
+- Try Demo: recruiters can explore realistic sample data without connecting Gmail.
+- Connect Gmail: real users can authenticate with Google OAuth and analyze their own recruiting emails.
+- Demo mode is controlled by `DEMO_MODE=true` in `backend/.env`.
 
 
+### Gmail Intelligence
 
----
+- Google OAuth login
+- Gmail API integration
+- Reads recent Gmail messages
+- Extracts sender, subject, date, snippet, and body
+- Cleans HTML emails
+- Ignores non-job emails such as newsletters, Quora Digest, shopping emails, alerts, and promotions
 
-## GitHub Repository
+### AI Email Classification
 
-https://github.com/soniya-thota/careermail-ai
+Classifies messages into:
 
----
+- Application Submitted
+- Recruiter Message
+- Interview
+- Online Assessment
+- Offer
+- Rejection
+- General Job Email
+- Not Job Related
 
-## Features
+### Job Search Dashboard
 
-### Gmail Integration
+Tracks:
 
-* Secure Google OAuth 2.0 authentication
-* Gmail API integration
-* Reads Gmail inbox messages
-* Retrieves full email content
-* Extracts sender, subject, date, and email previews
-* Provides access to detailed email views
+- Applications tracked
+- Recruiter responses
+- Response rate
+- Interviews
+- Interview rate
+- Offers
+- Rejections
+- Active applications
+- Follow-ups needed
 
-### Smart Email Classification
+### Application Tracker
 
-Automatically categorizes emails into:
+Groups emails by company and shows:
 
-* Application Submitted
-* Recruiter Message
-* Interview
-* Offer
-* Rejection
-* Online Assessment
-* Incomplete Application
-* General Job Email
-* Not Job Related
+- Company
+- Current status
+- Last email
+- Next action
+- AI summary
+- Full email history
 
-### Analytics Dashboard
+### AI Resume & Job Match Copilot
 
-* Displays email category statistics
-* Tracks recruiting activity across applications
-* Visualizes job search communication trends
-* Supports category-based drilldowns
+Paste a resume/profile and a job description to get:
 
-### Category Drilldowns
+- Match score
+- Role focus
+- Matched skills
+- Missing skills
+- Recommended resume bullets
+- Recruiter outreach draft
+- Next actions
 
-Users can click dashboard categories to view:
+### Career Agent
 
-* Interview emails
-* Recruiter messages
-* Rejections
-* Offers
-* Online assessments
-* Application confirmations
+Agentic AI workflow that:
 
-### Company Analytics
+1. Reads target role
+2. Reads resume/profile
+3. Reads job description
+4. Evaluates match
+5. Finds gaps
+6. Recommends portfolio and interview next actions
 
-Groups recruiting communications by company and provides:
+### Privacy-First Design
 
-* Total email count
-* Recruiting activity tracking
-* Category breakdowns
-* Company-specific insights
+Each user should have a private workspace. The production data model uses `user_id` on every sensitive table.
 
-### Email Detail View
-
-Displays:
-
-* Company name
-* Sender information
-* Email subject
-* Date received
-* Classification category
-* Email body preview
-
----
-
-## API Endpoints
-
-### Authentication
-
-#### Login
-
-```http
-GET /login
+```text
+users(id, email, name)
+emails(id, user_id, sender, subject, category, summary)
+applications(id, user_id, company, status, next_action)
+resumes(id, user_id, extracted_text)
+ai_outputs(id, user_id, type, result_json)
 ```
 
-Initiates Google OAuth authentication.
+Privacy rules:
 
-#### OAuth Callback
+- Never store Google tokens in frontend code
+- Fetch Gmail data only with the authenticated user's token
+- Store user data with `user_id`
+- Always query with `WHERE user_id = current_user.id`
+- Add delete-data and disconnect-Gmail controls before public launch
 
-```http
-GET /auth/callback
+## Architecture
+
+```text
+Landing Page
+   ↓
+Try Demo OR Connect Gmail
+   ↓
+Private User Workspace
+   ↓
+Gmail Import
+   ↓
+AI Relevance Filter
+   ↓
+Email Classifier
+   ↓
+Application Tracker
+   ↓
+Dashboard + Follow-ups
+   ↓
+Resume/JD Match Copilot
+   ↓
+Career Agent
 ```
 
-Handles Google OAuth response and creates user session.
-
-#### User Session
-
-```http
-GET /me
-```
-
-Returns current authentication status.
-
-#### Logout
-
-```http
-GET /logout
-```
-
-Clears session and logs user out.
-
----
-
-### Gmail Emails
-
-#### Recent Emails
-
-```http
-GET /gmail/emails
-```
-
-Returns:
-
-* Company
-* Sender
-* Subject
-* Category
-* Date
-* Preview
-
----
-
-### Analytics
-
-#### Dashboard Statistics
-
-```http
-GET /analytics
-```
-
-Returns category counts for classified emails.
-
-Example:
-
-```json
-{
-  "Application Submitted": 12,
-  "Interview": 4,
-  "Recruiter Message": 8,
-  "Rejection": 3
-}
-```
-
----
-
-### Company Analytics
-
-#### Company Insights
-
-```http
-GET /companies
-```
-
-Returns recruiting activity grouped by company.
-
----
-
-### Full Email Details
-
-#### Email Detail
-
-```http
-GET /gmail/full-email/{message_id}
-```
-
-Returns:
-
-* Company
-* Sender
-* Subject
-* Date
-* Category
-* Cleaned email body preview
-
----
-
-## Technology Stack
+## Tech Stack
 
 ### Frontend
 
-* React
-* JavaScript
-* Vite
-* React Router
-* Axios
-* CSS
+- React
+- Vite
+- React Router
+- Axios
+- Responsive CSS
 
 ### Backend
 
-* FastAPI
-* Python
-* Gmail API
-* Google OAuth 2.0
-* Authlib
-* BeautifulSoup
+- FastAPI
+- Python
+- Google OAuth
+- Gmail API
+- BeautifulSoup
+- Pydantic
 
-### Deployment
+### AI Logic
 
-* Vercel
-* Render
+- Rule-based AI-style classifier
+- Resume/JD match engine
+- Career agent workflow
+- Production-ready design for LLM upgrade
 
-### Version Control
+## Run Locally
 
-* Git
-* GitHub
+### Backend
 
----
-
-## System Architecture
-
-```text
-React Frontend (Vercel)
-           |
-           |
-           v
-FastAPI Backend (Render)
-           |
-           |
-           v
-Google OAuth 2.0
-           |
-           |
-           v
-Gmail API
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate   # Windows
+pip install -r requirements.txt
+uvicorn app.main:app --reload
 ```
 
----
+Backend runs at:
 
-## Project Highlights
+```text
+http://127.0.0.1:8000
+```
 
-* Built a full-stack cloud-hosted application from scratch
-* Implemented Google OAuth authentication
-* Integrated directly with Gmail APIs
-* Developed automated email classification workflows
-* Created analytics dashboards for recruiting insights
-* Built category drilldowns and detailed email views
-* Deployed production services using Vercel and Render
-* Implemented REST APIs for email retrieval and analytics
+API docs:
 
----
+```text
+http://127.0.0.1:8000/docs
+```
 
-## Future Enhancements
+### Frontend
 
-### AI Features
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-* OpenAI-powered email analysis
-* AI-generated email summaries
-* Intelligent recruiter interaction insights
-* Job search recommendations
+Frontend runs at:
 
-### Product Features
+```text
+http://localhost:5173
+```
 
-* Job application tracking database
-* Search and filtering
-* Company-specific recruiting timelines
-* Recruiter relationship management
-* Resume tracking
-* Interview preparation insights
-* Mobile-first experience
+## Environment Variables
 
-### Platform Improvements
+Create `backend/.env`:
 
-* Token-based authentication
-* Improved mobile support
-* Enhanced analytics
-* Exportable reports
+```env
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+SECRET_KEY=change-this-secret
+BACKEND_URL=http://localhost:8000
+FRONTEND_URL=http://localhost:5173
+DEMO_MODE=true
+GMAIL_MAX_RESULTS=25
+```
 
----
+Create `frontend/.env`:
 
-## Resume Impact
+```env
+VITE_API_BASE_URL=http://localhost:8000
+```
 
-This project demonstrates experience with:
+## Portfolio Pitch
 
-* Full-Stack Development
-* Software Engineering
-* REST API Design
-* OAuth Authentication
-* Cloud Deployment
-* Frontend Development
-* Backend Development
-* API Integration
-* Data Processing
-* Production Debugging
-* Git and GitHub Workflows
+Built CareerMail AI, a multi-user AI job search intelligence platform that connects to Gmail, classifies recruiting emails, tracks applications, analyzes resume-job fit, and generates personalized next actions while keeping each user's data private.
 
----
+## Future Improvements
+
+- PostgreSQL database with user-level isolation
+- Encrypted Google token storage
+- Resume PDF upload and parsing
+- RAG over resume, job descriptions, and email history
+- LLM-based email classifier
+- Calendar integration for interview reminders
+- Email follow-up automation
+- Stripe billing for SaaS launch
 
 ## Author
 
-### Soniya Thota
+Soniya Thota
 
-Master of Science in Computer Science
+- GitHub: https://github.com/soniya-thota
+- LinkedIn: https://www.linkedin.com/in/thotasoni/
 
-University at Buffalo
 
-Focused on:
+## Demo vs Real Gmail
 
-* Software Engineering
-* Artificial Intelligence Applications
-* Cloud Systems
-* Full-Stack Development
-* Scalable Web Applications
+For portfolio sharing, keep:
 
----
+```env
+DEMO_MODE=true
+```
 
-## License
+This enables the **Try Demo** button so recruiters can use the app immediately.
 
-This project is intended for educational, portfolio, and demonstration purposes.
+For real Gmail testing, use:
+
+```env
+DEMO_MODE=false
+```
+
+Then make sure Google Cloud Console includes this authorized redirect URI:
+
+```text
+http://localhost:8000/auth/callback
+```
+
+If OAuth fails locally, clear browser cookies for localhost and make sure the frontend uses `http://localhost:5173` and the backend uses `http://localhost:8000`.

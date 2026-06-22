@@ -1,17 +1,12 @@
 import axios from "axios";
 
-export const API_BASE_URL = "https://careermail-ai-backend.onrender.com";
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000";
 
 export function getAuthHeaders() {
+  const demoSelected = localStorage.getItem("careermail_demo") === "true";
+  if (demoSelected) return {};
   const token = localStorage.getItem("gmail_token");
-
-  if (!token) {
-    return {};
-  }
-
-  return {
-    Authorization: `Bearer ${token}`,
-  };
+  return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
 export const api = axios.create({
@@ -24,6 +19,5 @@ api.interceptors.request.use((config) => {
     ...config.headers,
     ...getAuthHeaders(),
   };
-
   return config;
 });
